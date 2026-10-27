@@ -1,0 +1,72 @@
+{% set name = "xbuild" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f0b1f76adab44b1be6d0587d1433ced1a0903e7402ef381f6f7c35b0e8126d17
+
+build:
+  number: 0
+  skip: true  # [py<311]
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - xbuild = xbuild.__main__:entrypoint
+    - xvenv = xvenv.__main__:entrypoint
+    - xpython = xpython.__main__:entrypoint
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools ==84.0.0
+    - setuptools-scm ==10.3.4
+  run:
+    - python
+    - python-build >=1.6.0
+    - dependency-groups
+    - platformdirs
+    - filelock
+
+test:
+  source_files:
+    - tests
+  imports:
+    - xbuild
+    - xpython
+    - xvenv
+  commands:
+    - pip check
+    - xbuild --help
+    - xvenv --help
+    - xpython --help
+    # live tests cannot run in conda environments, because they need network access, an iOS/Android SDK, and the full source checkout.
+    - pytest -vv tests -m "not live"
+  requires:
+    - pip
+    - pytest
+
+about:
+  home: https://pypi.org/project/xbuild/
+  summary: A PEP517 build frontend for cross-compiling wheels.
+  description: |
+    xbuild is PEP 517 build frontend that has additions and extensions
+    to support cross-compiling wheels for platforms where compilation
+    cannot be performed natively - most notably Android and iOS.
+    Initial experimental support also exists for Emscripten (WASM).
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  doc_url: https://xbuild.beeware.org/
+  dev_url: https://github.com/beeware/xbuild
+
+extra:
+  recipe-maintainers:
+    - freakboy3742
+  skip-lints:
+    # `python-build >=1.6.0` add according to upstream 
+    # https://github.com/beeware/xbuild/blob/v0.4.1/pyproject.toml#L42
+    - python_build_tools_in_host
