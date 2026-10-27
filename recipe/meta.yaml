@@ -52,11 +52,21 @@ test:
 about:
   home: https://pypi.org/project/xbuild/
   summary: A PEP517 build frontend for cross-compiling wheels.
+  description: |
+    xbuild is PEP 517 build frontend that has additions and extensions
+    to support cross-compiling wheels for platforms where compilation
+    cannot be performed natively - most notably Android and iOS.
+    Initial experimental support also exists for Emscripten (WASM).
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
   doc_url: https://xbuild.beeware.org/
   dev_url: https://github.com/beeware/xbuild
-  license: BSD-3-Clause
-  license_file: LICENSE
 
 extra:
   recipe-maintainers:
     - freakboy3742
+  skip-lints:
+    # `python-build >=1.6.0` add according to upstream 
+    # https://github.com/beeware/xbuild/blob/v0.4.1/pyproject.toml#L42
+    - python_build_tools_in_host
